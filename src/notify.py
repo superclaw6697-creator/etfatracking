@@ -113,11 +113,13 @@ def format_cross_etf_summary(diffs: list[dict]) -> str:
         for entry in increased:
             code = entry["today"]["股票代號"]
             names[code] = entry["today"]["個股名稱"]
-            increased_by.setdefault(code, []).append(diff["etf_id"])
+            delta = int(_parse_num(entry["today"]["持有股數"]) - _parse_num(entry["prev"]["持有股數"]))
+            increased_by.setdefault(code, []).append(f"{diff['etf_id']}+{delta:,}")
         for entry in decreased:
             code = entry["today"]["股票代號"]
             names[code] = entry["today"]["個股名稱"]
-            decreased_by.setdefault(code, []).append(diff["etf_id"])
+            delta = int(_parse_num(entry["today"]["持有股數"]) - _parse_num(entry["prev"]["持有股數"]))
+            decreased_by.setdefault(code, []).append(f"{diff['etf_id']}{delta:,}")
 
     # Only keep stocks held by 2+ ETFs, sort by count desc
     multi_up = sorted(
