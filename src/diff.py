@@ -18,7 +18,7 @@ def _load_csv(path: Path) -> dict[str, dict]:
 
 def _find_csv(etf_id: str, target_date: date, data_dir: Path) -> Optional[Path]:
     date_str = target_date.strftime("%Y_%m_%d")
-    path = data_dir / f"{etf_id}_{date_str}.csv"
+    path = data_dir / etf_id / f"{date_str}.csv"
     return path if path.exists() else None
 
 
@@ -70,8 +70,11 @@ def compute_diff(etf_id: str, data_dir: Path, today: Optional[date] = None) -> d
     for code in sorted(prev_codes - today_codes):
         result["removed"].append(prev_holdings[code])
 
+    IGNORE = {"Price"}
     for code in sorted(today_codes & prev_codes):
-        if today_holdings[code] != prev_holdings[code]:
+        t = {k: v for k, v in today_holdings[code].items() if k not in IGNORE}
+        p = {k: v for k, v in prev_holdings[code].items() if k not in IGNORE}
+        if t != p:
             result["changed"].append({
                 "prev": prev_holdings[code],
                 "today": today_holdings[code],
