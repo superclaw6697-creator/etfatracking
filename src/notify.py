@@ -100,6 +100,51 @@ def format_diff_message(diff: dict) -> str:
     return "\n".join(lines)
 
 
+def format_cross_etf_summary(diffs: list[dict]) -> str:
+    """找出多支 ETF 同時增持或減持的個股，顯示前三名。"""
+    increased_by: dict[str, list[str]] = {}  # code -> [etf_id, ...]
+    decreased_by: dict[str, list[str]] = {}
+    names: dict[str, str] = {}
+
+    for diff in diffs:
+        if diff.get("error"):
+            continue
+        increased, decreased, _ = _classify_changed(diff.get("changed", []))
+        for entry in increased:
+            code = entry["today"]["股票代號"]
+            names[code] = entry["today"]["個股名稱"]
+            increased_by.setdefault(code, []).append(diff["etf_id"])
+        for entry in decreased:
+            code = entry["today"]["股票代號"]
+            names[code] = entry["today"]["個股名稱"]
+            decreased_by.setdefault(code, []).append(diff["etf_id"])
+
+    # Only keep stocks held by 2+ ETFs, sort by count desc
+    multi_up = sorted(
+        [(c, etfs) for c, etfs in increased_by.items() if len(etfs) >= 2],
+        key=lambda x: -len(x[1])
+    )[:3]
+    multi_down = sorted(
+        [(c, etfs) for c, etfs in decreased_by.items() if len(etfs) >= 2],
+        key=lambda x: -len(x[1])
+    )[:3]
+
+    if not multi_up and not multi_down:
+        return ""
+
+    lines = ["<b>📊 跨 ETF 同步異動</b>"]
+    if multi_up:
+        lines.append("\n📈 共同增持 Top3：")
+        for code, etfs in multi_up:
+            lines.append(f"  {code} {names[code]}  [{', '.join(etfs)}]")
+    if multi_down:
+        lines.append("\n📉 共同減持 Top3：")
+        for code, etfs in multi_down:
+            lines.append(f"  {code} {names[code]}  [{', '.join(etfs)}]")
+
+    return "\n".join(lines)
+
+
 def send_diffs(diffs: list[dict]) -> None:
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat_id = os.environ.get("TELEGRAM_CHAT_ID")
@@ -108,7 +153,12 @@ def send_diffs(diffs: list[dict]) -> None:
         print("[notify] TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not set, skipping notification")
         return
 
-    message = "\n\n".join(format_diff_message(d) for d in diffs)
+    parts = [format_diff_message(d) for d in diffs]
+    summary = format_cross_etf_summary(diffs)
+    if summary:
+        parts.append(summary)
+
+    message = "\n\n".join(parts)
     print(f"[notify] Sending combined diff for {[d['etf_id'] for d in diffs]}...")
     try:
         _send(token, chat_id, message)
