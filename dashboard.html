@@ -379,8 +379,8 @@ function computeDiff(holdingsA, holdingsB) {
   return {
     added:   holdingsB.filter(h => !mapA[h.code]),
     removed: holdingsA.filter(h => !mapB[h.code]),
-    changed: holdingsB.filter(h => mapA[h.code] && Math.abs(h.ratio - mapA[h.code].ratio) > 0.005)
-                      .map(h => ({ ...h, prevRatio: mapA[h.code].ratio })),
+    changed: holdingsB.filter(h => mapA[h.code] && h.shares !== mapA[h.code].shares)
+                      .map(h => ({ ...h, prevShares: mapA[h.code].shares })),
   };
 }
 
@@ -393,7 +393,7 @@ function fmtShares(n) {
 
 function getStockUrl(h) {
   if (h.market === 'TW' && /^\d{4,5}$/.test(h.code))
-    return `https://ytdf.yuanta.com.tw/prod/YesiDmz/StockPreview/${h.code}`;
+    return `https://tw.stock.yahoo.com/quote/${h.code}.TW`;
   if (h.market === 'US')
     return `https://finance.yahoo.com/quote/${h.code}`;
   return null;
@@ -583,7 +583,7 @@ async function renderETFView() {
       ${diff.removed.length ? `<div class="diff-title" style="margin-top:10px;">移除持股 (-${diff.removed.length})</div>
         <div class="diff-chips">${diff.removed.map(h=>`<span class="chip removed">${h.displayName}</span>`).join('')}</div>` : ''}
       ${diff.changed.length ? `<div class="diff-title" style="margin-top:10px;">比例變動 (${diff.changed.length})</div>
-        <div class="diff-chips">${diff.changed.map(h=>`<span class="chip changed" onclick="scrollToStock('${h.code}')">${h.displayName} ${h.prevRatio}%→${h.ratio}%</span>`).join('')}</div>` : ''}
+        <div class="diff-chips">${diff.changed.map(h=>{const delta=h.shares-h.prevShares;const sign=delta>0?'+':'';return`<span class="chip changed" onclick="scrollToStock('${h.code}')">${h.displayName} ${sign}${delta.toLocaleString()}股</span>`;}).join('')}</div>` : ''}
     </div>` : ''}
 
     <div class="charts-grid">
@@ -641,11 +641,12 @@ function renderTable(holdings, cmpHoldings) {
         ? `<a class="stock-code" href="${url}" target="_blank" rel="noopener">${h.code}</a>`
         : `<span class="stock-code" style="color:${removed ? 'var(--red)' : 'var(--text2)'};cursor:default">${h.code}</span>`;
       const isAdded   = !removed && cmpHoldings && !cmpMap[h.code];
-      const isChanged = !removed && cmpHoldings && cmpMap[h.code] && Math.abs(h.ratio - cmpMap[h.code].ratio) > 0.005;
+      const isChanged = !removed && cmpHoldings && cmpMap[h.code] && h.shares !== cmpMap[h.code].shares;
       const rowClass  = removed ? 'hl-removed' : isAdded ? 'hl-added' : isChanged ? 'hl-changed' : '';
+      const _delta    = isChanged ? h.shares - cmpMap[h.code].shares : 0;
       const diffTag   = removed ? `<span class="diff-tag removed">移除</span>`
                       : isAdded ? `<span class="diff-tag added">新增</span>`
-                      : isChanged ? `<span class="diff-tag changed">${cmpMap[h.code].ratio}%→</span>` : '';
+                      : isChanged ? `<span class="diff-tag changed">${_delta>0?'+':''}${_delta.toLocaleString()}股</span>` : '';
       const barW = maxRatio > 0 ? Math.round(h.ratio / maxRatio * 80) : 0;
       let priceHtml = '';
       if (hasPrices) {
@@ -699,10 +700,11 @@ function renderTable(holdings, cmpHoldings) {
       : `<span class="stock-code" style="color:var(--text2);cursor:default">${h.code}</span>`;
 
     const isAdded   = cmpHoldings && !cmpMap[h.code];
-    const isChanged = cmpHoldings && cmpMap[h.code] && Math.abs(h.ratio - cmpMap[h.code].ratio) > 0.005;
+    const isChanged = cmpHoldings && cmpMap[h.code] && h.shares !== cmpMap[h.code].shares;
     const rowClass  = isAdded ? 'hl-added' : isChanged ? 'hl-changed' : '';
+    const _tdelta   = isChanged ? h.shares - cmpMap[h.code].shares : 0;
     const diffTag   = isAdded ? `<span class="diff-tag added">新增</span>`
-                    : isChanged ? `<span class="diff-tag changed">${cmpMap[h.code].ratio}%→</span>` : '';
+                    : isChanged ? `<span class="diff-tag changed">${_tdelta>0?'+':''}${_tdelta.toLocaleString()}股</span>` : '';
 
     const barW = maxRatio > 0 ? Math.round(h.ratio / maxRatio * 80) : 0;
 

@@ -70,7 +70,7 @@ def compute_diff(etf_id: str, data_dir: Path, today: Optional[date] = None) -> d
     for code in sorted(prev_codes - today_codes):
         result["removed"].append(prev_holdings[code])
 
-    IGNORE = {"Price"}
+    IGNORE = {"Price", "投資比例(%)"}
     for code in sorted(today_codes & prev_codes):
         t = {k: v for k, v in today_holdings[code].items() if k not in IGNORE}
         p = {k: v for k, v in prev_holdings[code].items() if k not in IGNORE}

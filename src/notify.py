@@ -32,7 +32,8 @@ def _format_change(entry: dict) -> str:
     prev, today = entry["prev"], entry["today"]
     code = prev["股票代號"]
     name = prev["個股名稱"]
-    fields = [k for k in prev if k != "股票代號" and k != "個股名稱"]
+    HIDE = {"股票代號", "個股名稱", "投資比例(%)", "Price"}
+    fields = [k for k in prev if k not in HIDE]
     parts = []
     for f in fields:
         p, t = prev.get(f, ""), today.get(f, "")
@@ -161,6 +162,8 @@ def send_diffs(diffs: list[dict]) -> None:
         parts.append(summary)
 
     message = "\n\n".join(parts)
+    if len(message) > 4096:
+        message = message[:4090] + "\n…"
     print(f"[notify] Sending combined diff for {[d['etf_id'] for d in diffs]}...")
     try:
         _send(token, chat_id, message)
