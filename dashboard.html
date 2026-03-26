@@ -15,9 +15,43 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; }
   .app { display: flex; height: 100vh; overflow: hidden; }
-  .sidebar { width: 220px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
-  .main { flex: 1; overflow-y: auto; padding: 24px; }
-  .sidebar-header { padding: 20px 16px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text3); border-bottom: 1px solid var(--border); }
+  .sidebar { width: 220px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; transition: transform .25s ease, width .25s ease; }
+  .sidebar.collapsed { width: 0; border-right: none; overflow: hidden; }
+  .main { flex: 1; overflow: hidden; min-width: 0; display: flex; flex-direction: column; }
+  .main-inner { flex: 1; overflow-y: auto; padding: 24px; }
+  /* Mobile: sidebar overlays content */
+  @media (max-width: 640px) {
+    .sidebar { position: fixed; top: 0; left: 0; height: 100%; z-index: 100; transform: translateX(0); width: 220px; }
+    .sidebar.collapsed { transform: translateX(-220px); width: 220px; }
+    .mobile-bar { display: flex !important; }
+    #mobile-etf-select, .mobile-etf-chevron { display: block !important; }
+    .main-inner { padding: 16px; }
+    .page-header { flex-wrap: wrap; gap: 8px; }
+    .date-selector { margin-left: 0; flex-wrap: wrap; width: 100%; }
+    .charts-grid { grid-template-columns: 1fr !important; }
+    .chart-wrap { height: 200px; }
+    .overlay { display: block; }
+  }
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 99; }
+  .sidebar-header { padding: 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .sidebar-header-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text3); }
+  .toggle-btn { background: none; border: none; color: var(--text2); cursor: pointer; padding: 4px; line-height: 1; font-size: 18px; display: flex; align-items: center; }
+  .toggle-btn:hover { color: var(--text); }
+  /* Top bar — shown on mobile always, on desktop when sidebar is collapsed */
+  .mobile-bar { display: none; align-items: center; gap: 10px; padding: 10px 16px; background: var(--bg2); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; flex-shrink: 0; }
+  .mobile-bar.visible { display: flex; }
+  .mobile-menu-btn { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 20px; padding: 2px 4px; line-height: 1; }
+  .mobile-menu-btn:hover { color: var(--text); }
+  .mobile-bar-title { font-size: 14px; font-weight: 700; color: var(--text); }
+  /* Holdings card list (mobile table replacement) */
+  .holdings-list { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+  .holding-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+  .holding-card.hl-added { border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.05); }
+  .holding-card.hl-removed { border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.05); opacity: .7; }
+  .holding-card.hl-changed { border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.04); }
+  .hc-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .hc-name { font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+  .hc-row2 { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .sidebar-item { padding: 10px 16px; cursor: pointer; border-left: 3px solid transparent; transition: all .15s; display: flex; justify-content: space-between; align-items: center; }
   .sidebar-item:hover { background: var(--bg3); }
   .sidebar-item.active { border-left-color: var(--accent); background: rgba(79,127,255,.08); color: var(--accent); }
@@ -102,9 +136,13 @@
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="sidebar">
-    <div class="sidebar-header">ETF 儀表板</div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+<div class="app" id="app">
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-header-title">ETF 儀表板</span>
+      <button class="toggle-btn" id="sidebar-close-btn" onclick="closeSidebar()" title="收起">‹</button>
+    </div>
     <div class="sidebar-overview active" id="nav-overview" onclick="showOverview()">
       <div style="font-weight:600;font-size:13px;">總覽</div>
       <div style="font-size:11px;color:var(--text3);margin-top:2px;">所有 ETF 比較</div>
@@ -112,8 +150,17 @@
     <div style="height:1px;background:var(--border);margin:4px 0;"></div>
     <div id="sidebar-etfs"><div style="padding:12px 16px;color:var(--text3);font-size:12px;">載入中…</div></div>
   </div>
-  <div class="main" id="main-content">
-    <div class="loading-state"><span class="spinner"></span> 載入 index.json…</div>
+  <div class="main">
+    <div class="mobile-bar">
+      <button class="mobile-menu-btn" onclick="openSidebar()">☰</button>
+      <select id="mobile-etf-select" onchange="onMobileNavChange(this.value)" style="flex:1;background:transparent;border:none;color:var(--text);font-size:15px;font-weight:700;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;display:none;">
+        <option value="">ETF 儀表板</option>
+      </select>
+      <span class="mobile-etf-chevron" style="color:var(--text3);font-size:12px;pointer-events:none;display:none;">▾</span>
+    </div>
+    <div id="main-content" class="main-inner">
+      <div class="loading-state"><span class="spinner"></span> 載入 index.json…</div>
+    </div>
   </div>
 </div>
 
@@ -365,7 +412,22 @@ let searchQuery = '';
 // ═══════════════════════════════════════════════════════════
 // SIDEBAR
 // ═══════════════════════════════════════════════════════════
+function updateMobileNav() {
+  const sel = document.getElementById('mobile-etf-select');
+  if (!sel) return;
+  const etfIds = Object.keys(etfMap);
+  sel.innerHTML = `<option value="">總覽</option>` +
+    etfIds.map(id => `<option value="${id}">${id}</option>`).join('');
+  sel.value = currentEtf || '';
+}
+
+function onMobileNavChange(val) {
+  if (val) showETF(val);
+  else showOverview();
+}
+
 function updateSidebar(holdingsMap = {}) {
+  updateMobileNav();
   document.getElementById('nav-overview').className =
     'sidebar-overview' + (currentView === 'overview' ? ' active' : '');
   const etfIds = Object.keys(etfMap);
@@ -383,7 +445,7 @@ function updateSidebar(holdingsMap = {}) {
 // ═══════════════════════════════════════════════════════════
 // OVERVIEW
 // ═══════════════════════════════════════════════════════════
-async function showOverview() {
+async function _showOverviewNoHistory() {
   currentView = 'overview';
   currentEtf = null;
   updateSidebar();
@@ -434,10 +496,16 @@ async function showOverview() {
   requestAnimationFrame(() => createOverviewBarChart('overview-bar', etfIds, holdingsMap));
 }
 
+async function showOverview() {
+  if (isMobile()) closeSidebar();
+  history.pushState({}, '', location.pathname);
+  await _showOverviewNoHistory();
+}
+
 // ═══════════════════════════════════════════════════════════
 // ETF VIEW
 // ═══════════════════════════════════════════════════════════
-async function showETF(etfId) {
+async function _showETFNoHistory(etfId) {
   currentView = 'etf';
   currentEtf = etfId;
   const dates = etfMap[etfId] || [];
@@ -447,6 +515,12 @@ async function showETF(etfId) {
   searchQuery = '';
   updateSidebar();
   await renderETFView();
+}
+
+async function showETF(etfId) {
+  if (isMobile()) closeSidebar();
+  history.pushState({}, '', `?q=${etfId}`);
+  await _showETFNoHistory(etfId);
 }
 
 async function renderETFView() {
@@ -556,6 +630,62 @@ function renderTable(holdings, cmpHoldings) {
   const hasPrices = holdings.some(h => h.price !== null);
   const hasPricePct = holdings.some(h => h.pricePct !== undefined);
 
+  const container = document.getElementById('table-container');
+  if (!container) return;
+
+  // ── Mobile card view ─────────────────────────────────────
+  if (isMobile()) {
+    const makeCard = (h, removed) => {
+      const url = getStockUrl(h);
+      const codeEl = url
+        ? `<a class="stock-code" href="${url}" target="_blank" rel="noopener">${h.code}</a>`
+        : `<span class="stock-code" style="color:${removed ? 'var(--red)' : 'var(--text2)'};cursor:default">${h.code}</span>`;
+      const isAdded   = !removed && cmpHoldings && !cmpMap[h.code];
+      const isChanged = !removed && cmpHoldings && cmpMap[h.code] && Math.abs(h.ratio - cmpMap[h.code].ratio) > 0.005;
+      const rowClass  = removed ? 'hl-removed' : isAdded ? 'hl-added' : isChanged ? 'hl-changed' : '';
+      const diffTag   = removed ? `<span class="diff-tag removed">移除</span>`
+                      : isAdded ? `<span class="diff-tag added">新增</span>`
+                      : isChanged ? `<span class="diff-tag changed">${cmpMap[h.code].ratio}%→</span>` : '';
+      const barW = maxRatio > 0 ? Math.round(h.ratio / maxRatio * 80) : 0;
+      let priceHtml = '';
+      if (hasPrices) {
+        if (!removed && h.price !== null) {
+          let changeHtml = '';
+          if (h.pricePct !== undefined) {
+            const pct = h.pricePct;
+            const cls = pct > 0 ? 'up' : pct < 0 ? 'down' : '';
+            const sym = pct > 0 ? '▲' : pct < 0 ? '▼' : '';
+            changeHtml = `<span class="change-badge ${cls}">${sym}${Math.abs(pct).toFixed(2)}%</span>`;
+          }
+          priceHtml = `<span class="price-val">${h.price.toLocaleString()}</span>${changeHtml}`;
+        } else {
+          priceHtml = `<span class="price-na">—</span>`;
+        }
+      }
+      const ratioText = removed
+        ? `<span class="ratio-text" style="text-decoration:line-through">${h.ratio.toFixed(2)}%</span>`
+        : `<div class="ratio-bar-wrap"><div class="ratio-bar" style="width:${barW}px;"></div><span class="ratio-text">${h.ratio.toFixed(2)}%</span></div>`;
+      return `<div class="holding-card ${rowClass}" id="row-${h.code}">
+        <div class="hc-row">
+          <div style="display:flex;align-items:center;gap:4px;">${codeEl}<span class="mkt-badge">${h.market !== 'other' ? h.market : ''}</span>${diffTag}</div>
+          <div>${priceHtml}</div>
+        </div>
+        <div class="hc-name">${h.displayName}</div>
+        <div class="hc-row2">
+          ${ratioText}
+          <span class="shares-text">${fmtShares(h.shares)}股</span>
+        </div>
+      </div>`;
+    };
+    const removedCards = cmpHoldings
+      ? cmpHoldings.filter(h => !todayMap[h.code])
+          .filter(h => !searchQuery || h.displayName.includes(searchQuery) || h.code.includes(searchQuery))
+          .map(h => makeCard(h, true)).join('')
+      : '';
+    container.innerHTML = `<div class="holdings-list">${sorted.map(h => makeCard(h, false)).join('')}${removedCards}</div>`;
+    return;
+  }
+
   const arrow = dir => `<span class="sort-arrow">${dir === 'asc' ? '↑' : '↓'}</span>`;
   const th = (col, label) => {
     const active = sortState.col === col;
@@ -619,8 +749,6 @@ function renderTable(holdings, cmpHoldings) {
         </tr>`)
     : [];
 
-  const container = document.getElementById('table-container');
-  if (!container) return;
   container.innerHTML = `<table>
     <thead><tr>
       ${th('code','代號')}
@@ -666,13 +794,60 @@ function onSort(col) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// SIDEBAR TOGGLE
+// ═══════════════════════════════════════════════════════════
+const isMobile = () => window.innerWidth <= 640;
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.add('collapsed');
+  document.getElementById('overlay').style.display = 'none';
+  document.querySelector('.mobile-bar').classList.add('visible');
+}
+
+function openSidebar() {
+  document.getElementById('sidebar').classList.remove('collapsed');
+  if (isMobile()) document.getElementById('overlay').style.display = 'block';
+  if (!isMobile()) document.querySelector('.mobile-bar').classList.remove('visible');
+}
+
+// On mobile start with sidebar closed; on desktop start open
+if (isMobile()) closeSidebar();
+
+window.addEventListener('popstate', () => {
+  const qParam = new URLSearchParams(location.search).get('q');
+  const targetEtf = qParam && Object.keys(etfMap).find(id => id.toLowerCase() === qParam.toLowerCase());
+  if (targetEtf) _showETFNoHistory(targetEtf);
+  else _showOverviewNoHistory();
+});
+
+let _lastMobile = isMobile();
+window.addEventListener('resize', () => {
+  if (!isMobile()) {
+    document.getElementById('sidebar').classList.remove('collapsed');
+    document.getElementById('overlay').style.display = 'none';
+  }
+  const nowMobile = isMobile();
+  if (nowMobile !== _lastMobile && currentView === 'etf') {
+    _lastMobile = nowMobile;
+    const holdings = csvCache[`${currentEtf}_${currentDate}`] || [];
+    const cmpHoldings = compareDate ? (csvCache[`${currentEtf}_${compareDate}`] || null) : null;
+    renderTable(holdings, cmpHoldings);
+  } else {
+    _lastMobile = nowMobile;
+  }
+});
+
+// ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
 (async () => {
   try {
     await loadIndex();
     updateSidebar();
-    await showOverview();
+    const qParam = new URLSearchParams(location.search).get('q');
+    const targetEtf = qParam && Object.keys(etfMap).find(id => id.toLowerCase() === qParam.toLowerCase());
+    if (targetEtf) await _showETFNoHistory(targetEtf);
+    else await _showOverviewNoHistory();
   } catch (e) {
     document.getElementById('main-content').innerHTML =
       `<div class="error-state">
