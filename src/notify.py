@@ -161,11 +161,24 @@ def send_diffs(diffs: list[dict]) -> None:
     if summary:
         parts.append(summary)
 
-    message = "\n\n".join(parts)
-    if len(message) > 4096:
-        message = message[:4090] + "\n…"
-    print(f"[notify] Sending combined diff for {[d['etf_id'] for d in diffs]}...")
-    try:
-        _send(token, chat_id, message)
-    except Exception as e:
-        print(f"[notify] ERROR sending message: {e}")
+    # Pack parts into messages ≤ 4096 chars, splitting on part boundaries
+    messages = []
+    current = ""
+    for part in parts:
+        chunk = (current + "\n\n" + part).strip() if current else part
+        if len(chunk) <= 4096:
+            current = chunk
+        else:
+            if current:
+                messages.append(current)
+            # If a single part itself exceeds limit, hard-truncate it
+            current = part[:4090] + "\n…" if len(part) > 4096 else part
+    if current:
+        messages.append(current)
+
+    print(f"[notify] Sending {len(messages)} message(s) for {[d['etf_id'] for d in diffs]}...")
+    for i, msg in enumerate(messages):
+        try:
+            _send(token, chat_id, msg)
+        except Exception as e:
+            print(f"[notify] ERROR sending message {i+1}/{len(messages)}: {e}")
