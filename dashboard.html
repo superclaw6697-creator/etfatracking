@@ -6,6 +6,27 @@
 <title>ETF 持股視覺化儀表板</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
+  .cross-etf-section { margin-bottom: 24px; }
+  .cross-etf-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+  .cross-etf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .cross-etf-grid { grid-template-columns: 1fr; } }
+  .cross-etf-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .cross-etf-box-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+  .cross-etf-box-title.inc { color: var(--red); }
+  .cross-etf-box-title.dec { color: var(--green); }
+  .cross-stock-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(46,51,71,.4); }
+  .cross-stock-row:last-child { border-bottom: none; }
+  .cross-stock-name { font-size: 13px; font-weight: 500; }
+  .cross-stock-code { font-size: 11px; color: var(--text3); font-family: monospace; margin-top: 1px; }
+  .cross-etf-tags { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+  .cross-etf-tag { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 600; }
+  .cross-etf-tag.inc { background: rgba(239,68,68,.15); color: var(--red); }
+  .cross-etf-tag.dec { background: rgba(34,197,94,.15); color: var(--green); }
+  .cross-etf-empty { font-size: 12px; color: var(--text3); padding: 12px 0; }
+  .etf-title-link { font-size: 14px; color: var(--text3); margin-left: 8px; text-decoration: none; vertical-align: middle; transition: color .15s; }
+  .etf-title-link:hover { color: var(--accent); }
+</style>
+<style>
   :root {
     --bg: #0f1117; --bg2: #1a1d27; --bg3: #242736; --border: #2e3347;
     --accent: #4f7fff; --accent2: #7c5cff;
@@ -183,7 +204,7 @@ const csvCache = {};        // { "ETF_DATE": [holdings] }
 const priceIndexCache = {}; // { date: {code: price} }
 
 async function loadIndex() {
-  const res = await fetch('data/index.json');
+  const res = await fetch(`data/index.json?t=${Date.now()}`);
   if (!res.ok) throw new Error(`index.json: HTTP ${res.status}`);
   indexData = await res.json();
   etfMap = {};
@@ -443,6 +464,54 @@ function updateSidebar(holdingsMap = {}) {
 }
 
 // ═══════════════════════════════════════════════════════════
+// CROSS-ETF DIFF
+// ═══════════════════════════════════════════════════════════
+async function computeCrossETFDiffs(etfIds) {
+  const increaseMap = {};
+  const decreaseMap = {};
+
+  await Promise.all(etfIds.map(async id => {
+    const dates = etfMap[id];
+    if (dates.length < 2) return;
+    const today = dates.at(-1);
+    const prev  = dates.at(-2);
+    const [todayH, prevH] = await Promise.all([
+      loadCSV(id, today).catch(() => []),
+      loadCSV(id, prev).catch(() => []),
+    ]);
+    if (!todayH.length || !prevH.length) return;
+    const diff = computeDiff(prevH, todayH);
+    const increases = [
+      ...diff.added,
+      ...diff.changed.filter(h => h.shares > h.prevShares),
+    ];
+    const decreases = [
+      ...diff.removed,
+      ...diff.changed.filter(h => h.shares < h.prevShares),
+    ];
+    for (const h of increases) {
+      if (!increaseMap[h.code]) increaseMap[h.code] = { displayName: h.displayName, etfs: [] };
+      const delta = h.prevShares !== undefined ? h.shares - h.prevShares : null; // null = newly added
+      increaseMap[h.code].etfs.push({ id, delta });
+    }
+    for (const h of decreases) {
+      if (!decreaseMap[h.code]) decreaseMap[h.code] = { displayName: h.displayName, etfs: [] };
+      const delta = h.prevShares !== undefined ? h.shares - h.prevShares : null; // null = fully removed
+      decreaseMap[h.code].etfs.push({ id, delta });
+    }
+  }));
+
+  const commonIncreases = Object.entries(increaseMap)
+    .filter(([, v]) => v.etfs.length >= 2)
+    .sort((a, b) => b[1].etfs.length - a[1].etfs.length);
+  const commonDecreases = Object.entries(decreaseMap)
+    .filter(([, v]) => v.etfs.length >= 2)
+    .sort((a, b) => b[1].etfs.length - a[1].etfs.length);
+
+  return { commonIncreases, commonDecreases };
+}
+
+// ═══════════════════════════════════════════════════════════
 // OVERVIEW
 // ═══════════════════════════════════════════════════════════
 async function _showOverviewNoHistory() {
@@ -463,6 +532,33 @@ async function _showOverviewNoHistory() {
 
   updateSidebar(holdingsMap);
 
+  // Compute cross-ETF diffs
+  const { commonIncreases, commonDecreases } = await computeCrossETFDiffs(etfIds);
+
+  const renderCrossStock = (entries, cls) => {
+    if (!entries.length) return `<div class="cross-etf-empty">無跨 ETF 共同變動</div>`;
+    return entries.map(([code, info]) => {
+      const url = /^\d{4,5}[A-Z]?$/.test(code) ? `https://tw.stock.yahoo.com/quote/${code}.TW` : null;
+      const nameEl = url
+        ? `<a href="${url}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;">${info.displayName}</a>`
+        : info.displayName;
+      const sign = cls === 'inc' ? '+' : '';
+      const tags = info.etfs.map(({ id, delta }) => {
+        const deltaStr = delta !== null
+          ? ` <span style="font-weight:400;opacity:.75">${sign}${delta.toLocaleString()}股</span>`
+          : ` <span style="font-weight:400;opacity:.75">${cls === 'inc' ? '新增' : '移除'}</span>`;
+        return `<span class="cross-etf-tag ${cls}">${id}${deltaStr}</span>`;
+      }).join('');
+      return `<div class="cross-stock-row">
+        <div>
+          <div class="cross-stock-name">${nameEl}</div>
+          <div class="cross-stock-code">${code}</div>
+        </div>
+        <div class="cross-etf-tags">${tags}</div>
+      </div>`;
+    }).join('');
+  };
+
   main.innerHTML = `
     <div class="page-header">
       <div>
@@ -470,12 +566,21 @@ async function _showOverviewNoHistory() {
         <div class="page-subtitle">共 ${etfIds.length} 支 ETF · 資料更新：${indexData.updated?.slice(0,10) || ''}</div>
       </div>
     </div>
-    <div class="charts-grid" style="margin-bottom:24px;">
-      <div class="chart-box full">
-        <div class="chart-title">各 ETF 持股數量比較</div>
-        <div class="chart-wrap" style="height:200px;"><canvas id="overview-bar"></canvas></div>
+
+    <div class="cross-etf-section">
+      <div class="cross-etf-title">跨 ETF 共同動向（昨日相比）</div>
+      <div class="cross-etf-grid">
+        <div class="cross-etf-box">
+          <div class="cross-etf-box-title inc">▲ 共同增持</div>
+          ${renderCrossStock(commonIncreases, 'inc')}
+        </div>
+        <div class="cross-etf-box">
+          <div class="cross-etf-box-title dec">▼ 共同減持</div>
+          ${renderCrossStock(commonDecreases, 'dec')}
+        </div>
       </div>
     </div>
+
     <div class="etf-overview-cards">
       ${etfIds.map(id => {
         const h = holdingsMap[id] || [];
@@ -492,8 +597,6 @@ async function _showOverviewNoHistory() {
         </div>`;
       }).join('')}
     </div>`;
-
-  requestAnimationFrame(() => createOverviewBarChart('overview-bar', etfIds, holdingsMap));
 }
 
 async function showOverview() {
@@ -549,7 +652,7 @@ async function renderETFView() {
   main.innerHTML = `
     <div class="page-header">
       <div>
-        <div class="page-title">${etfId}</div>
+        <div class="page-title">${etfId}<a class="etf-title-link" href="https://tw.stock.yahoo.com/quote/${etfId}.TW" target="_blank" rel="noopener" title="Yahoo Finance">↗</a></div>
         <div class="page-subtitle">${holdings.length} 支持股${hasPrices ? ' · 含今日股價' : ''}</div>
       </div>
       <div class="date-selector">
