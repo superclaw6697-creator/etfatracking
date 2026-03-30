@@ -25,6 +25,12 @@
       "prices_file": "prices_2026_03_27.json"
     },
     {
+      "etf": "00981A",
+      "date": "2026-03-30",
+      "file": "00981A/2026_03_30.csv",
+      "prices_file": "prices_2026_03_30.json"
+    },
+    {
       "etf": "00987A",
       "date": "2026-03-25",
       "file": "00987A/2026_03_25.csv",
@@ -41,6 +47,12 @@
       "date": "2026-03-27",
       "file": "00987A/2026_03_27.csv",
       "prices_file": "prices_2026_03_27.json"
+    },
+    {
+      "etf": "00987A",
+      "date": "2026-03-30",
+      "file": "00987A/2026_03_30.csv",
+      "prices_file": "prices_2026_03_30.json"
     },
     {
       "etf": "00988A",
@@ -67,6 +79,12 @@
       "prices_file": "prices_2026_03_27.json"
     },
     {
+      "etf": "00988A",
+      "date": "2026-03-30",
+      "file": "00988A/2026_03_30.csv",
+      "prices_file": "prices_2026_03_30.json"
+    },
+    {
       "etf": "00990A",
       "date": "2026-03-25",
       "file": "00990A/2026_03_25.csv",
@@ -83,6 +101,12 @@
       "date": "2026-03-27",
       "file": "00990A/2026_03_27.csv",
       "prices_file": "prices_2026_03_27.json"
+    },
+    {
+      "etf": "00990A",
+      "date": "2026-03-30",
+      "file": "00990A/2026_03_30.csv",
+      "prices_file": "prices_2026_03_30.json"
     },
     {
       "etf": "00991A",
@@ -103,6 +127,12 @@
       "prices_file": "prices_2026_03_27.json"
     },
     {
+      "etf": "00991A",
+      "date": "2026-03-30",
+      "file": "00991A/2026_03_30.csv",
+      "prices_file": "prices_2026_03_30.json"
+    },
+    {
       "etf": "00993A",
       "date": "2026-03-25",
       "file": "00993A/2026_03_25.csv",
@@ -121,6 +151,12 @@
       "prices_file": "prices_2026_03_27.json"
     },
     {
+      "etf": "00993A",
+      "date": "2026-03-30",
+      "file": "00993A/2026_03_30.csv",
+      "prices_file": "prices_2026_03_30.json"
+    },
+    {
       "etf": "00996A",
       "date": "2026-03-25",
       "file": "00996A/2026_03_25.csv",
@@ -137,7 +173,13 @@
       "date": "2026-03-27",
       "file": "00996A/2026_03_27.csv",
       "prices_file": "prices_2026_03_27.json"
+    },
+    {
+      "etf": "00996A",
+      "date": "2026-03-30",
+      "file": "00996A/2026_03_30.csv",
+      "prices_file": "prices_2026_03_30.json"
     }
   ],
-  "updated": "2026-03-27T14:40:01"
+  "updated": "2026-03-30T12:05:31"
 }
