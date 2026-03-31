@@ -25,6 +25,19 @@
   .cross-etf-empty { font-size: 12px; color: var(--text3); padding: 12px 0; }
   .etf-title-link { font-size: 14px; color: var(--text3); margin-left: 8px; text-decoration: none; vertical-align: middle; transition: color .15s; }
   .etf-title-link:hover { color: var(--accent); }
+  .conflict-section { margin-bottom: 24px; }
+  .conflict-title { font-size: 15px; font-weight: 700; margin-bottom: 14px; }
+  .conflict-title .conflict-badge { font-size: 11px; font-weight: 600; background: rgba(245,158,11,.15); color: var(--yellow); padding: 2px 7px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+  .conflict-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .conflict-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(46,51,71,.4); }
+  .conflict-row:last-child { border-bottom: none; }
+  .conflict-stock-name { font-size: 13px; font-weight: 500; }
+  .conflict-stock-code { font-size: 11px; color: var(--text3); font-family: monospace; margin-top: 1px; }
+  .conflict-tags { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 60%; }
+  .conflict-tag { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 600; }
+  .conflict-tag.buy { background: rgba(239,68,68,.15); color: var(--red); }
+  .conflict-tag.sell { background: rgba(34,197,94,.15); color: var(--green); }
+  .conflict-empty { font-size: 12px; color: var(--text3); padding: 12px 0; }
 </style>
 <style>
   :root {
@@ -508,7 +521,17 @@ async function computeCrossETFDiffs(etfIds) {
     .filter(([, v]) => v.etfs.length >= 2)
     .sort((a, b) => b[1].etfs.length - a[1].etfs.length);
 
-  return { commonIncreases, commonDecreases };
+  const conflictSignals = Object.entries(increaseMap)
+    .filter(([code]) => decreaseMap[code])
+    .map(([code, incInfo]) => ({
+      code,
+      displayName: incInfo.displayName,
+      buying: incInfo.etfs,
+      selling: decreaseMap[code].etfs,
+    }))
+    .sort((a, b) => (b.buying.length + b.selling.length) - (a.buying.length + a.selling.length));
+
+  return { commonIncreases, commonDecreases, conflictSignals };
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -533,7 +556,7 @@ async function _showOverviewNoHistory() {
   updateSidebar(holdingsMap);
 
   // Compute cross-ETF diffs
-  const { commonIncreases, commonDecreases } = await computeCrossETFDiffs(etfIds);
+  const { commonIncreases, commonDecreases, conflictSignals } = await computeCrossETFDiffs(etfIds);
 
   const renderCrossStock = (entries, cls) => {
     if (!entries.length) return `<div class="cross-etf-empty">無跨 ETF 共同變動</div>`;
@@ -578,6 +601,36 @@ async function _showOverviewNoHistory() {
           <div class="cross-etf-box-title dec">▼ 共同減持</div>
           ${renderCrossStock(commonDecreases, 'dec')}
         </div>
+      </div>
+    </div>
+
+    <div class="conflict-section">
+      <div class="conflict-title">訊號分歧標的 <span class="conflict-badge">買賣對立</span></div>
+      <div class="conflict-box">
+        ${conflictSignals.length === 0
+          ? `<div class="conflict-empty">目前無買賣對立標的</div>`
+          : conflictSignals.map(({ code, displayName, buying, selling }) => {
+              const url = /^\d{4,5}[A-Z]?$/.test(code) ? `https://tw.stock.yahoo.com/quote/${code}.TW` : null;
+              const nameEl = url
+                ? `<a href="${url}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;">${displayName}</a>`
+                : displayName;
+              const buyTags = buying.map(({ id, delta }) => {
+                const d = delta !== null ? ` <span style="font-weight:400;opacity:.75">+${delta.toLocaleString()}股</span>` : ` <span style="font-weight:400;opacity:.75">新增</span>`;
+                return `<span class="conflict-tag buy">▲ ${id}${d}</span>`;
+              }).join('');
+              const sellTags = selling.map(({ id, delta }) => {
+                const d = delta !== null ? ` <span style="font-weight:400;opacity:.75">${delta.toLocaleString()}股</span>` : ` <span style="font-weight:400;opacity:.75">移除</span>`;
+                return `<span class="conflict-tag sell">▼ ${id}${d}</span>`;
+              }).join('');
+              return `<div class="conflict-row">
+                <div>
+                  <div class="conflict-stock-name">${nameEl}</div>
+                  <div class="conflict-stock-code">${code}</div>
+                </div>
+                <div class="conflict-tags">${buyTags}${sellTags}</div>
+              </div>`;
+            }).join('')
+        }
       </div>
     </div>
 
