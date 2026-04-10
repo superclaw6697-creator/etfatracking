@@ -1,6 +1,30 @@
 {
   "files": [
     {
+      "etf": "00400A",
+      "date": "2026-04-09",
+      "file": "00400A/2026_04_09.csv",
+      "prices_file": "prices_2026_04_09.json"
+    },
+    {
+      "etf": "00400A",
+      "date": "2026-04-10",
+      "file": "00400A/2026_04_10.csv",
+      "prices_file": "prices_2026_04_10.json"
+    },
+    {
+      "etf": "00401A",
+      "date": "2026-04-09",
+      "file": "00401A/2026_04_09.csv",
+      "prices_file": "prices_2026_04_09.json"
+    },
+    {
+      "etf": "00401A",
+      "date": "2026-04-10",
+      "file": "00401A/2026_04_10.csv",
+      "prices_file": "prices_2026_04_10.json"
+    },
+    {
       "etf": "00981A",
       "date": "2026-03-24",
       "file": "00981A/2026_03_24.csv",
@@ -79,6 +103,18 @@
       "prices_file": "prices_2026_04_09.json"
     },
     {
+      "etf": "00981A",
+      "date": "2026-04-10",
+      "file": "00981A/2026_04_10.csv",
+      "prices_file": "prices_2026_04_10.json"
+    },
+    {
+      "etf": "00982A",
+      "date": "2026-04-10",
+      "file": "00982A/2026_04_10.csv",
+      "prices_file": "prices_2026_04_10.json"
+    },
+    {
       "etf": "00987A",
       "date": "2026-03-25",
       "file": "00987A/2026_03_25.csv",
@@ -149,6 +185,12 @@
       "date": "2026-04-09",
       "file": "00987A/2026_04_09.csv",
       "prices_file": "prices_2026_04_09.json"
+    },
+    {
+      "etf": "00987A",
+      "date": "2026-04-10",
+      "file": "00987A/2026_04_10.csv",
+      "prices_file": "prices_2026_04_10.json"
     },
     {
       "etf": "00988A",
@@ -229,6 +271,12 @@
       "prices_file": "prices_2026_04_09.json"
     },
     {
+      "etf": "00988A",
+      "date": "2026-04-10",
+      "file": "00988A/2026_04_10.csv",
+      "prices_file": "prices_2026_04_10.json"
+    },
+    {
       "etf": "00990A",
       "date": "2026-03-25",
       "file": "00990A/2026_03_25.csv",
@@ -299,6 +347,12 @@
       "date": "2026-04-09",
       "file": "00990A/2026_04_09.csv",
       "prices_file": "prices_2026_04_09.json"
+    },
+    {
+      "etf": "00990A",
+      "date": "2026-04-10",
+      "file": "00990A/2026_04_10.csv",
+      "prices_file": "prices_2026_04_10.json"
     },
     {
       "etf": "00991A",
@@ -373,6 +427,12 @@
       "prices_file": "prices_2026_04_09.json"
     },
     {
+      "etf": "00991A",
+      "date": "2026-04-10",
+      "file": "00991A/2026_04_10.csv",
+      "prices_file": "prices_2026_04_10.json"
+    },
+    {
       "etf": "00993A",
       "date": "2026-03-25",
       "file": "00993A/2026_03_25.csv",
@@ -445,6 +505,12 @@
       "prices_file": "prices_2026_04_09.json"
     },
     {
+      "etf": "00993A",
+      "date": "2026-04-10",
+      "file": "00993A/2026_04_10.csv",
+      "prices_file": "prices_2026_04_10.json"
+    },
+    {
       "etf": "00996A",
       "date": "2026-03-25",
       "file": "00996A/2026_03_25.csv",
@@ -515,7 +581,13 @@
       "date": "2026-04-09",
       "file": "00996A/2026_04_09.csv",
       "prices_file": "prices_2026_04_09.json"
+    },
+    {
+      "etf": "00996A",
+      "date": "2026-04-10",
+      "file": "00996A/2026_04_10.csv",
+      "prices_file": "prices_2026_04_10.json"
     }
   ],
-  "updated": "2026-04-09T16:12:24"
+  "updated": "2026-04-10T14:45:46"
 }
