@@ -4,7 +4,10 @@ import time
 from typing import Optional
 
 import requests
+import urllib3
 from bs4 import BeautifulSoup
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 PRICE_URL = "https://fubon-ebrokerdj.fbs.com.tw/Z/ZC/ZCX/ZCX_{code}.djhtm"
 HEADERS = {
@@ -28,7 +31,7 @@ def _sanitize_price(raw: str) -> Optional[str]:
 def fetch_price(code: str) -> Optional[str]:
     """Fetch 收盤價 for one TW stock code. Returns sanitized price string or None."""
     try:
-        resp = requests.get(PRICE_URL.format(code=code), headers=HEADERS, timeout=15)
+        resp = requests.get(PRICE_URL.format(code=code), headers=HEADERS, timeout=15, verify=False)
         resp.encoding = "big5"
         soup = BeautifulSoup(resp.text, "lxml")
         for td in soup.find_all("td"):

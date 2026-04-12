@@ -7,7 +7,10 @@ from pathlib import Path
 from typing import Optional
 
 import requests
+import urllib3
 from bs4 import BeautifulSoup
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 BASE_URL = "https://www.moneydj.com/etf/x/basic/basic0007b.xdjhtm?etfid={etf_id}.tw"
 
@@ -34,7 +37,7 @@ def _extract_code(name_cell: str) -> str:
 
 def fetch_holdings(etf_id: str) -> list[dict]:
     url = BASE_URL.format(etf_id=etf_id)
-    resp = requests.get(url, headers=HEADERS, timeout=30)
+    resp = requests.get(url, headers=HEADERS, timeout=30, verify=False)
     resp.raise_for_status()
     resp.encoding = "utf-8"
 
