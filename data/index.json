@@ -367,6 +367,12 @@
       "prices_file": "prices_2026_07_01.json"
     },
     {
+      "etf": "00400A",
+      "date": "2026-07-02",
+      "file": "00400A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
+    },
+    {
       "etf": "00401A",
       "date": "2026-04-09",
       "file": "00401A/2026_04_09.csv",
@@ -733,6 +739,12 @@
       "prices_file": "prices_2026_07_01.json"
     },
     {
+      "etf": "00401A",
+      "date": "2026-07-02",
+      "file": "00401A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
+    },
+    {
       "etf": "00403A",
       "date": "2026-05-13",
       "file": "00403A/2026_05_13.csv",
@@ -947,6 +959,12 @@
       "date": "2026-07-01",
       "file": "00403A/2026_07_01.csv",
       "prices_file": "prices_2026_07_01.json"
+    },
+    {
+      "etf": "00403A",
+      "date": "2026-07-02",
+      "file": "00403A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
     },
     {
       "etf": "00981A",
@@ -1387,6 +1405,12 @@
       "prices_file": "prices_2026_07_01.json"
     },
     {
+      "etf": "00981A",
+      "date": "2026-07-02",
+      "file": "00981A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
+    },
+    {
       "etf": "00982A",
       "date": "2026-04-09",
       "file": "00982A/2026_04_09.csv",
@@ -1751,6 +1775,12 @@
       "date": "2026-07-01",
       "file": "00982A/2026_07_01.csv",
       "prices_file": "prices_2026_07_01.json"
+    },
+    {
+      "etf": "00982A",
+      "date": "2026-07-02",
+      "file": "00982A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
     },
     {
       "etf": "00987A",
@@ -2183,6 +2213,12 @@
       "date": "2026-07-01",
       "file": "00987A/2026_07_01.csv",
       "prices_file": "prices_2026_07_01.json"
+    },
+    {
+      "etf": "00987A",
+      "date": "2026-07-02",
+      "file": "00987A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
     },
     {
       "etf": "00988A",
@@ -2623,6 +2659,12 @@
       "prices_file": "prices_2026_07_01.json"
     },
     {
+      "etf": "00988A",
+      "date": "2026-07-02",
+      "file": "00988A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
+    },
+    {
       "etf": "00990A",
       "date": "2026-03-25",
       "file": "00990A/2026_03_25.csv",
@@ -3053,6 +3095,12 @@
       "date": "2026-07-01",
       "file": "00990A/2026_07_01.csv",
       "prices_file": "prices_2026_07_01.json"
+    },
+    {
+      "etf": "00990A",
+      "date": "2026-07-02",
+      "file": "00990A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
     },
     {
       "etf": "00991A",
@@ -3487,6 +3535,12 @@
       "prices_file": "prices_2026_07_01.json"
     },
     {
+      "etf": "00991A",
+      "date": "2026-07-02",
+      "file": "00991A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
+    },
+    {
       "etf": "00992A",
       "date": "2026-04-12",
       "file": "00992A/2026_04_12.csv",
@@ -3839,6 +3893,12 @@
       "date": "2026-07-01",
       "file": "00992A/2026_07_01.csv",
       "prices_file": "prices_2026_07_01.json"
+    },
+    {
+      "etf": "00992A",
+      "date": "2026-07-02",
+      "file": "00992A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
     },
     {
       "etf": "00993A",
@@ -4273,6 +4333,12 @@
       "prices_file": "prices_2026_07_01.json"
     },
     {
+      "etf": "00993A",
+      "date": "2026-07-02",
+      "file": "00993A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
+    },
+    {
       "etf": "00996A",
       "date": "2026-03-25",
       "file": "00996A/2026_03_25.csv",
@@ -4703,7 +4769,13 @@
       "date": "2026-07-01",
       "file": "00996A/2026_07_01.csv",
       "prices_file": "prices_2026_07_01.json"
+    },
+    {
+      "etf": "00996A",
+      "date": "2026-07-02",
+      "file": "00996A/2026_07_02.csv",
+      "prices_file": "prices_2026_07_02.json"
     }
   ],
-  "updated": "2026-07-01T13:56:07"
+  "updated": "2026-07-02T11:34:25"
 }
