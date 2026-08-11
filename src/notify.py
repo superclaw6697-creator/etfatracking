@@ -57,23 +57,19 @@ def _classify_changed(changed: list) -> tuple:
     return increased, decreased, other
 
 
-def _dashboard_link(etf_id: str) -> str:
-    return f"https://superclaw6697-creator.github.io/etfatracking/dashboard.html?q={etf_id}"
-
-
 def format_diff_message(diff: dict) -> str:
     etf_id = diff["etf_id"]
     today = diff["today"]
 
     if diff.get("error"):
-        return f"<b>{etf_id}</b> ({today})\n⚠️ {diff['error']}\n{_dashboard_link(etf_id)}"
+        return f"<b>{etf_id}</b> ({today})\n⚠️ {diff['error']}"
 
     added = diff["added"]
     removed = diff["removed"]
     changed = diff.get("changed", [])
 
     if not added and not removed and not changed:
-        return f"<b>{etf_id}</b> ({today})\n✅ 持股無變化\n{_dashboard_link(etf_id)}"
+        return f"<b>{etf_id}</b> ({today})\n✅ 持股無變化"
 
     lines = [f"<b>{etf_id}</b> ({today})"]
 
@@ -101,8 +97,6 @@ def format_diff_message(diff: dict) -> str:
             lines.append(f"\n🔄 其他異動 {len(other)} 檔：")
             for entry in other:
                 lines.append(_format_change(entry))
-
-    lines.append(f"\n{_dashboard_link(etf_id)}")
 
     return "\n".join(lines)
 
@@ -181,6 +175,10 @@ def send_diffs(diffs: list[dict]) -> None:
             current = part[:4090] + "\n…" if len(part) > 4096 else part
     if current:
         messages.append(current)
+
+    if messages:
+        link = "https://superclaw6697-creator.github.io/chiptracking/?tab=etf"
+        messages[-1] = messages[-1] + f"\n\n{link}"
 
     print(f"[notify] Sending {len(messages)} message(s) for {[d['etf_id'] for d in diffs]}...")
     for i, msg in enumerate(messages):
