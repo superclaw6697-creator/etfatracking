@@ -23,14 +23,15 @@ jobs:
         run: |
           docker run --rm \
             -v ${{ github.workspace }}/data:/app/data \
+            -v ${{ github.workspace }}/logs:/app/logs \
             -e TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }} \
             -e TELEGRAM_CHAT_ID=${{ secrets.TELEGRAM_CHAT_ID }} \
             etf-tracker all
 
-      - name: Commit new CSV files
+      - name: Commit new CSV and log files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/
+          git add data/ logs/
           git diff --staged --quiet || git commit -m "data: ETF holdings $(date +%Y-%m-%d)"
           git push

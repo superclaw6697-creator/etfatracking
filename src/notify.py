@@ -39,6 +39,9 @@ def _format_change(entry: dict) -> str:
         p, t = prev.get(f, ""), today.get(f, "")
         if p != t:
             parts.append(f"{f}: {p} → {t}")
+    ratio = today.get("投資比例(%)", "")
+    if ratio:
+        parts.append(f"目前佔比: {ratio}%")
     return f"  {code} {name}  " + "  ".join(parts)
 
 
