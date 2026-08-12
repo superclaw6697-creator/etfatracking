@@ -4,9 +4,9 @@ from typing import Optional
 
 
 def _load_all_logs(logs_dir: Path) -> list[dict]:
-    """Load every logs/{date}.json, tagging each diff with its date."""
+    """Load every logs/{YYYY-MM}/{date}.json (or archive/{YYYY-MM}/*.json), tagging each diff with its date."""
     records = []
-    for path in sorted(logs_dir.glob("*.json")):
+    for path in sorted(logs_dir.rglob("*.json")):
         date_str = path.stem
         diffs = json.loads(path.read_text(encoding="utf-8"))
         for d in diffs:
