@@ -1,11 +1,14 @@
-"""Re-fetch and overwrite the most recent trading day's ETF holdings.
+"""Re-fetch and overwrite today's ETF holdings.
 
-Run the morning after the regular evening crawl. If moneydj.com hadn't
-published the day's finalized holdings yet when the 19:30 crawl ran, this
-catches the corrected data and overwrites the stale CSVs (no diff/notify —
-just a silent correction of the historical record).
+Run later the same evening as the regular 19:30 crawl (cron: 22:30 weekdays).
+If moneydj.com hadn't published the day's finalized holdings yet when the
+19:30 crawl ran, this catches the corrected data and overwrites the stale
+CSVs (no diff/notify — just a silent correction of the historical record).
+
+Only runs on weekdays (cron restricts to Mon-Fri), so "today" is always the
+trading day being corrected.
 """
-from datetime import date, timedelta
+from datetime import date
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -19,20 +22,13 @@ DATA_DIR = ROOT / "data"
 CONFIG_FILE = ROOT / "config" / "etfs.txt"
 
 
-def last_business_day(from_date: date) -> date:
-    d = from_date - timedelta(days=1)
-    while d.weekday() >= 5:  # Sat=5, Sun=6
-        d -= timedelta(days=1)
-    return d
-
-
 def main() -> None:
     etf_ids = [
         line.strip()
         for line in CONFIG_FILE.read_text(encoding="utf-8").splitlines()
         if line.strip() and not line.startswith("#")
     ]
-    target = last_business_day(date.today())
+    target = date.today()
     print(f"[backfill] Re-fetching and overwriting {target.isoformat()}...")
     crawl_all(etf_ids, DATA_DIR, today=target)
 
