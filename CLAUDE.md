@@ -63,6 +63,16 @@ Required secrets: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
 
 GitHub Pages: `https://superclaw6697-creator.github.io/etfatracking/`
 
+## Local cron jobs (crontab, not LaunchAgents)
+
+- `30 19 * * 1-5` → `trigger_workflow.sh` — manually triggers the GH Actions workflow (redundant with its own 15:00 UTC schedule, kept as a backup trigger)
+- `30 22 * * 1-5` → `backfill_and_push.sh` — re-fetches **today's** holdings and overwrites if moneydj.com hadn't published finalized data yet when the 19:30 evening crawl ran (moneydj sometimes lags). Pulls first before committing to avoid conflicting with the GH Actions commit for the same date — **always keep this `git pull` step**, removing it reintroduces recurring add/add merge conflicts on the day's CSV files.
+- `backfill_last_trading_day.py` — the actual re-fetch logic; target date is always `date.today()` since the cron runs same-night, not next-morning
+
+## daily_report.js — analysis skill entry point
+
+`node daily_report.js [YYYY-MM-DD]` — git pulls, reads the latest (or given) date's human-readable diff log from `logs/YYYY-MM/YYYY-MM-DD.txt`, and fetches live premium/discount for 00981A/00991A/00403A via `../projects/fetch_etf_premium.js`. Prints combined JSON to stdout. Used by the `etf-daily-report` Claude skill (`~/.claude/skills/etf-daily-report/skill.md`) to generate a Telegram-pushed daily summary — highlights cross-ETF synchronized buys/sells (the "📊 跨 ETF 同步異動" block at the end of each day's log) as the strongest signal, since that means multiple active-fund managers moved on the same stock the same day.
+
 ## Key implementation notes
 
 - `write_index` in `crawler.py` scans `data/{ETF_ID}/*.csv` subdirs and links `prices_file` per date — must be run after every crawl
