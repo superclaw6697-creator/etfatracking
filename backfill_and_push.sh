@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 cd /Users/superclaw/etf_tracking
+git pull --no-edit
 /opt/homebrew/bin/python3 backfill_last_trading_day.py
 git add data/
 if ! git diff --staged --quiet; then
