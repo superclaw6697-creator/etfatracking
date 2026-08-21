@@ -71,7 +71,17 @@ GitHub Pages: `https://superclaw6697-creator.github.io/etfatracking/`
 
 ## daily_report.js — analysis skill entry point
 
-`node daily_report.js [YYYY-MM-DD]` — git pulls, reads the latest (or given) date's human-readable diff log from `logs/YYYY-MM/YYYY-MM-DD.txt`, and fetches live premium/discount for 00981A/00991A/00403A via `../projects/fetch_etf_premium.js`. Prints combined JSON to stdout. Used by the `etf-daily-report` Claude skill (`~/.claude/skills/etf-daily-report/skill.md`) to generate a Telegram-pushed daily summary — highlights cross-ETF synchronized buys/sells (the "📊 跨 ETF 同步異動" block at the end of each day's log) as the strongest signal, since that means multiple active-fund managers moved on the same stock the same day.
+`node daily_report.js [YYYY-MM-DD]` — git pulls, reads the latest (or given) date's **structured** diff log from `logs/YYYY-MM/YYYY-MM-DD.json` (not the `.txt` — that's just for human skimming), and computes:
+
+- **Cross-ETF net flow ranking** (in board lots, 1 lot = 1000 shares) across all 12 tracked ETFs — which single stock got bought/sold the most in aggregate, broken down by which ETF contributed how much, plus that stock's same-day price % move
+- **Per-ETF deep detail** for the three flagship active funds (00981A/00991A/00403A): sorted add/cut list with lot deltas and price %, an `is_near_wipeout` flag when a cut leaves fewer than 10 lots (near-total exit signal), and an **AUM estimate** (`sum(shares×price) / (invested_weight_pct/100)`, i.e. back out total fund size including cash from the market value of disclosed holdings) plus day-over-day AUM change %. Validated against real disclosed fund sizes — error was under NT$1億 for 00991A and 00403A in testing.
+- Live premium/discount for the same three ETFs via `../projects/fetch_etf_premium.js`
+
+Prints combined JSON to stdout. Used by the `etf-daily-report` Claude skill (`~/.claude/skills/etf-daily-report/skill.md`) to write a narrative daily report styled like a real analyst's ETF flow commentary, pushed to Telegram.
+
+**Data quality guard**: some issuers occasionally return a malformed page for one ETF on a given day (holding rows show up with the Chinese stock name in the code field and no price — a page-layout hiccup, not a real trade). `hasDataQualityIssue()` detects this from the `added` list and drops that ETF's moves entirely for the day (both from cross-ETF ranking and from `target_etf_detail` if it's one of the three flagship funds) rather than half-filtering, which would otherwise fabricate a fake buy+sell pair for the same underlying stock. Affected ETFs are listed in `cross_etf_ranking.skipped_etfs_data_quality`.
+
+**CSV parsing gotcha**: the crawler writes CRLF line endings, so a naive `split('\n')` leaves a trailing `\r` on the last header/field (`Price\r`), silently breaking every lookup keyed on `'Price'`. `readCsvHoldings()` strips `\r` globally before parsing — don't reintroduce a raw split without it.
 
 ## Key implementation notes
 
