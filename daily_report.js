@@ -163,11 +163,14 @@ function buildEtfMoves(entry) {
 
   for (const item of entry.added || []) {
     const shares = parseNum(item['持有股數']);
+    const price = parseNum(item['Price']); // 常是空值（美/日/韓股沒有收盤價來源），這時就沒辦法算金額
+    const lotDelta = shares !== null ? Math.round(shares / LOT_SIZE) : null;
     moves.push({
       code: item['股票代號'], name: item['個股名稱'],
       type: 'added',
-      lot_delta: shares !== null ? Math.round(shares / LOT_SIZE) : null,
-      today_lots: shares !== null ? Math.round(shares / LOT_SIZE) : null,
+      lot_delta: lotDelta,
+      today_lots: lotDelta,
+      value_delta: (lotDelta !== null && price !== null) ? lotDelta * LOT_SIZE * price : null,
       weight_pct: parseNum(item['投資比例(%)']),
       price_pct: null
     });
@@ -175,11 +178,14 @@ function buildEtfMoves(entry) {
 
   for (const item of entry.removed || []) {
     const shares = parseNum(item['持有股數']);
+    const price = parseNum(item['Price']);
+    const lotDelta = shares !== null ? -Math.round(shares / LOT_SIZE) : null;
     moves.push({
       code: item['股票代號'], name: item['個股名稱'],
       type: 'removed',
-      lot_delta: shares !== null ? -Math.round(shares / LOT_SIZE) : null,
+      lot_delta: lotDelta,
       today_lots: 0,
+      value_delta: (lotDelta !== null && price !== null) ? lotDelta * LOT_SIZE * price : null,
       weight_pct: 0,
       price_pct: null
     });
@@ -193,11 +199,14 @@ function buildEtfMoves(entry) {
     const lotDelta = (prevShares !== null && todayShares !== null)
       ? Math.round((todayShares - prevShares) / LOT_SIZE) : null;
     const todayLots = todayShares !== null ? Math.round(todayShares / LOT_SIZE) : null;
+    // 用「今天的股價」估算這筆加減碼的金額（跟前面 AUM/資金流估算的定價邏輯一致）
+    const refPrice = todayPrice !== null ? todayPrice : prevPrice;
     moves.push({
       code: c.today['股票代號'], name: c.today['個股名稱'],
       type: lotDelta > 0 ? 'increased' : 'decreased',
       lot_delta: lotDelta,
       today_lots: todayLots,
+      value_delta: (lotDelta !== null && refPrice !== null) ? lotDelta * LOT_SIZE * refPrice : null,
       weight_pct: parseNum(c.today['投資比例(%)']),
       price_pct: pctChange(prevPrice, todayPrice),
       is_near_wipeout: (lotDelta < 0 && todayLots !== null && todayLots < WIPEOUT_LOT_THRESHOLD)
@@ -232,31 +241,44 @@ function buildTargetEtfDetail(dateStr, entry) {
   };
 }
 
-// 跨「全部」ETF 的淨買超排行（張數），給每檔股票標出各 ETF 的貢獻與當日股價%
+// 跨「全部」ETF 的淨買超排行，主要用「金額」排序（不是單純張數）——因為不同 ETF 規模差很多，
+// 981A/991A/403A 這三檔規模動輒數百億，它們的加減碼在金額上意義遠大於小型 ETF 的張數變化。
+// 用張數硬排的話，小型 ETF 一筆便宜股票的大量張數變化反而會蓋過大型旗艦 ETF 真正重要的動作。
 function buildCrossEtfRanking(logData) {
-  const byStock = {}; // code -> { name, total_lot_delta, contributions: [{etf, lot_delta}], price_pct }
+  const byStock = {}; // code -> { name, total_lot_delta, total_value_delta, contributions, price_pct, has_flagship }
   const skippedEtfs = [];
 
   for (const entry of logData) {
     if (entry.error) continue;
     const { moves, data_quality_issue } = buildEtfMoves(entry);
     if (data_quality_issue) { skippedEtfs.push(entry.etf_id); continue; }
+    const isFlagship = TARGET_ETFS.includes(entry.etf_id);
     for (const m of moves) {
       if (m.lot_delta === null || m.lot_delta === 0) continue;
       if (!byStock[m.code]) {
-        byStock[m.code] = { code: m.code, name: m.name, total_lot_delta: 0, contributions: [], price_pct: m.price_pct };
+        byStock[m.code] = {
+          code: m.code, name: m.name,
+          total_lot_delta: 0, total_value_delta: 0, has_value_gap: false,
+          contributions: [], price_pct: m.price_pct, has_flagship: false
+        };
       }
-      byStock[m.code].total_lot_delta += m.lot_delta;
-      byStock[m.code].contributions.push({ etf: entry.etf_id, lot_delta: m.lot_delta });
-      if (byStock[m.code].price_pct === null) byStock[m.code].price_pct = m.price_pct;
+      const s = byStock[m.code];
+      s.total_lot_delta += m.lot_delta;
+      if (m.value_delta !== null) s.total_value_delta += m.value_delta;
+      else s.has_value_gap = true; // 這檔股票裡有某筆貢獻沒有股價可算金額（通常是海外股），金額排名僅供參考
+      s.contributions.push({ etf: entry.etf_id, lot_delta: m.lot_delta, value_delta: m.value_delta });
+      if (s.price_pct === null) s.price_pct = m.price_pct;
+      if (isFlagship) s.has_flagship = true;
     }
   }
 
   const all = Object.values(byStock);
+  // 主要排序依據：金額（大到小 / 小到大）；金額完全算不出來的（has_value_gap 且 total_value_delta 為 0）退回用張數排
+  const rankKey = s => s.total_value_delta !== 0 ? s.total_value_delta : s.total_lot_delta * 1; // 沒有金額資訊時退化成張數
   const topBuys = all.filter(s => s.total_lot_delta > 0)
-    .sort((a, b) => b.total_lot_delta - a.total_lot_delta).slice(0, 5);
+    .sort((a, b) => rankKey(b) - rankKey(a)).slice(0, 5);
   const topSells = all.filter(s => s.total_lot_delta < 0)
-    .sort((a, b) => a.total_lot_delta - b.total_lot_delta).slice(0, 5);
+    .sort((a, b) => rankKey(a) - rankKey(b)).slice(0, 5);
 
   return { top_buys: topBuys, top_sells: topSells, skipped_etfs_data_quality: skippedEtfs };
 }
