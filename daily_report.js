@@ -6,12 +6,14 @@
  *   1. git pull 到最新
  *   2. 讀出 logs/ 底下最新一天的持股異動 JSON log（結構化：added/removed/changed，含新舊股數與股價）
  *   3. 針對全部 ETF 算出「跨 ETF 淨買超排行」（單位：張）
- *   4. 針對三檔主動式旗艦 ETF（00981A/00991A/00403A）算出深度數據：
+ *   4. 針對「全部」有追蹤的 ETF，算出資金流排行（把股價漲跌造成的規模變化，跟
+ *      經理人實際加減碼造成的規模變化分開估算），找出今天資金流入/流出最多的基金
+ *   5. 針對三檔主動式旗艦 ETF（00981A/00991A/00403A）算出深度數據：
  *      - 加碼/減碼 Top N（張數、個股當日股價漲跌%）
  *      - 是否為「清倉式減碼」（今日剩餘部位 < 清倉門檻）
  *      - 估算 AUM（用當日全持股 市值加總 / 已投資權重% 反推，含現金部位）及較前一日增減方向
- *   5. 呼叫 fetch_etf_premium.js 抓這三檔的即時折溢價
- *   6. 印出一份 JSON，供上層（Claude / skill）讀取後做分析與 Telegram 推播
+ *   6. 呼叫 fetch_etf_premium.js 抓這三檔的即時折溢價
+ *   7. 印出一份 JSON，供上層（Claude / skill）讀取後做分析與 Telegram 推播
  *
  * Usage:
  *   node daily_report.js              # 自動找最新一天的 log
@@ -25,10 +27,18 @@ const path = require('path');
 const ROOT = __dirname;
 const DATA_DIR = path.join(ROOT, 'data');
 const LOGS_DIR = path.join(ROOT, 'logs');
+const CONFIG_FILE = path.join(ROOT, 'config', 'etfs.txt');
 const PREMIUM_SCRIPT = path.join(path.dirname(ROOT), 'projects', 'fetch_etf_premium.js');
 const TARGET_ETFS = ['00981A', '00991A', '00403A'];
 const LOT_SIZE = 1000; // 1 張 = 1000 股（台股）
 const WIPEOUT_LOT_THRESHOLD = 10; // 減碼後剩不到 10 張 → 視為「清倉式減碼」
+const NOTABLE_FLOW_PCT = 3; // |資金流動%| 超過這個門檻才標記為「顯著」機會/風險訊號
+
+function loadAllEtfIds() {
+  return fs.readFileSync(CONFIG_FILE, 'utf8').split('\n')
+    .map(l => l.trim())
+    .filter(l => l && !l.startsWith('#'));
+}
 
 function log(msg) {
   process.stderr.write(`[daily_report] ${msg}\n`);
@@ -251,6 +261,82 @@ function buildCrossEtfRanking(logData) {
   return { top_buys: topBuys, top_sells: topSells, skipped_etfs_data_quality: skippedEtfs };
 }
 
+// 估算「資金流」而非單純市值變化：把今天的持股數量，用「前一天的價格」重新估價，
+// 這樣可以把「股價自然漲跌造成的規模變化」跟「經理人實際加減碼造成的規模變化」分開。
+// 後者才是比較接近「真的有錢進來/出去」的訊號，而不是「大盤漲，所以規模變大」。
+function estimateFundFlow(todayHoldings, prevHoldings) {
+  if (!todayHoldings || !prevHoldings) return null;
+
+  const prevMap = {};
+  for (const h of prevHoldings) {
+    const code = h['股票代號'];
+    if (!code) continue;
+    prevMap[code] = { shares: parseNum(h['持有股數']) || 0, price: parseNum(h['Price']) };
+  }
+  const todayMap = {};
+  for (const h of todayHoldings) {
+    const code = h['股票代號'];
+    if (!code) continue;
+    todayMap[code] = { shares: parseNum(h['持有股數']) || 0, price: parseNum(h['Price']) };
+  }
+
+  const allCodes = new Set([...Object.keys(prevMap), ...Object.keys(todayMap)]);
+  let flow = 0;
+  for (const code of allCodes) {
+    const prevShares = prevMap[code]?.shares || 0;
+    const todayShares = todayMap[code]?.shares || 0;
+    // 估價一律用前一天的收盤價（若是全新持股、前一天沒有價格，退而求其次用當天價格）
+    const refPrice = prevMap[code]?.price ?? todayMap[code]?.price;
+    if (refPrice === null || refPrice === undefined) continue;
+    flow += (todayShares - prevShares) * refPrice;
+  }
+  return flow;
+}
+
+// 針對「全部」有在追蹤的 ETF，算出資金流排行（不只三檔旗艦），用來回答
+// 「整體主動式ETF裡，今天錢實際上是往哪個基金流入/流出，佔比多少」
+function buildFundFlowRanking(dateStr, logData) {
+  const etfIds = loadAllEtfIds();
+  const dataQualityIssueEtfs = new Set(
+    logData.filter(e => !e.error && hasDataQualityIssue(e)).map(e => e.etf_id)
+  );
+  const results = [];
+  const skipped = [];
+
+  for (const etfId of etfIds) {
+    if (dataQualityIssueEtfs.has(etfId)) { skipped.push(etfId); continue; }
+    const todayCsv = path.join(DATA_DIR, etfId, dateToFilename(dateStr));
+    const prevCsv = findPrevCsvPath(etfId, dateStr);
+    const todayHoldings = readCsvHoldings(todayCsv);
+    const prevHoldings = prevCsv ? readCsvHoldings(prevCsv) : null;
+    if (!todayHoldings || !prevHoldings) continue;
+
+    const aumPrev = estimateAUM(prevHoldings);
+    const aumToday = estimateAUM(todayHoldings);
+    const flowEstimate = estimateFundFlow(todayHoldings, prevHoldings);
+    if (aumPrev === null || aumPrev === 0 || flowEstimate === null) continue;
+
+    const flowPct = (flowEstimate / aumPrev) * 100;
+    results.push({
+      etf_id: etfId,
+      aum_estimate: aumToday,
+      flow_estimate: flowEstimate,
+      flow_pct: flowPct,
+      signal: Math.abs(flowPct) >= NOTABLE_FLOW_PCT
+        ? (flowPct > 0 ? 'notable_inflow' : 'notable_outflow')
+        : 'normal'
+    });
+  }
+
+  results.sort((a, b) => b.flow_pct - a.flow_pct);
+  return {
+    all: results,
+    top_inflow: results.length ? results[0] : null,
+    top_outflow: results.length ? results[results.length - 1] : null,
+    skipped_etfs_data_quality: skipped
+  };
+}
+
 function fetchPremiums() {
   log(`抓折溢價：${TARGET_ETFS.join(', ')}`);
   try {
@@ -282,6 +368,7 @@ function main() {
   }
 
   const crossEtfRanking = buildCrossEtfRanking(logData);
+  const fundFlowRanking = buildFundFlowRanking(dateStr, logData);
 
   const targetDetails = {};
   for (const etfId of TARGET_ETFS) {
@@ -294,6 +381,7 @@ function main() {
   console.log(JSON.stringify({
     date: dateStr,
     cross_etf_ranking: crossEtfRanking,
+    fund_flow_ranking: fundFlowRanking,
     target_etf_detail: targetDetails,
     premiums
   }, null, 2));
