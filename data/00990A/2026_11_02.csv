@@ -1,0 +1,39 @@
+股票代號,個股名稱,投資比例(%),持有股數,Price
+MSFT,Microsoft(MSFT.US),6.80,"126,080",
+NVDA,NVIDIA(NVDA.US),5.94,"280,800",
+BE,Bloom Energy(BE.US),5.28,"251,300",
+LITE,Lumentum(LITE.US),5.15,"59,279",
+PLTR,Palantir Technologies(PLTR.US),5.08,"266,842",
+AMD,AMD(AMD.US),4.25,"81,379",
+META,Meta(META.US),4.11,"64,600",
+SPCX,SpaceX(SPCX.US),3.57,"256,528",
+MU,Micron(MU.US),3.48,"38,005",
+SHOP,Shopify(SHOP.US),3.32,"204,100",
+SNOW,Snowflake(SNOW.US),3.20,"101,200",
+2330,台積電(2330.TW),3.05,"406,000",2330.00
+ZS,Zscaler(ZS.US),2.42,"98,300",
+DDOG,Datadog(DDOG.US),2.38,"98,000",
+6098,Recruit Holdings(6098.JP),2.19,"174,100",
+NET,Cloudflare(NET.US),2.13,"73,500",
+3037,欣興(3037.TW),2.09,"667,000",997.00
+2454,聯發科(2454.TW),2.05,"165,000",3970.00
+2383,台光電(2383.TW),1.99,"134,000",4705.00
+AMZN,Amazon(AMZN.US),1.98,"79,500",
+CRWD,CrowdStrike Holdings(CRWD.US),1.92,"74,263",
+RBRK,Rubrik(RBRK.US),1.81,"140,800",
+OKTA,Okta(OKTA.US),1.78,"82,600",
+TWST,Twist Bioscience(TWST.US),1.64,"103,936",
+3017,奇鋐(3017.TW),1.55,"158,000",3060.00
+SMTC,Semtech(SMTC.US),1.43,"108,300",
+2368,金像電(2368.TW),1.19,"368,000",1060.00
+GH,Guardant Health(GH.US),1.10,"59,300",
+LLY,Eli Lilly(LLY.US),1.08,"7,400",
+3443,創意(3443.TW),1.07,"44,000",7285.00
+TSLA,Tesla(TSLA.US),1.06,"25,560",
+AAPL,Apple(AAPL.US),1.04,"29,200",
+CLS,Celestica(CLS.US),1.03,"37,680",
+GE,GE Aerospace(GE.US),1.01,"32,520",
+NOW,ServiceNow(NOW.US),0.98,"89,981",
+8046,南電(8046.TW),0.76,"201,000",1185.00
+2308,台達電(2308.TW),0.75,"176,000",1355.00
+RPRX,Royalty Pharma(RPRX.US),0.64,"92,700",
