@@ -1,0 +1,39 @@
+股票代號,個股名稱,投資比例(%),持有股數,Price
+MSFT,Microsoft(MSFT.US),7.02,"126,080",
+NVDA,NVIDIA(NVDA.US),6.20,"280,800",
+BE,Bloom Energy(BE.US),5.75,"251,300",
+PLTR,Palantir Technologies(PLTR.US),5.00,"266,842",
+META,Meta(META.US),4.29,"64,600",
+AMD,AMD(AMD.US),4.21,"81,379",
+SPCX,SpaceX(SPCX.US),3.88,"256,528",
+MU,Micron(MU.US),3.47,"38,005",
+SNOW,Snowflake(SNOW.US),3.19,"101,200",
+AMZN,Amazon(AMZN.US),3.14,"117,140",
+SHOP,Shopify(SHOP.US),3.11,"204,100",
+2330,台積電(2330.TW),3.04,"406,000",2260.00
+GOOGL,Alphabet - Class A Common Stock(GOOGL.US),2.98,"99,480",
+LLY,Eli Lilly(LLY.US),2.43,"16,160",
+ZS,Zscaler(ZS.US),2.37,"98,300",
+6098,Recruit Holdings(6098.JP),2.12,"174,100",
+GE,GE Aerospace(GE.US),2.12,"61,800",
+2454,聯發科(2454.TW),1.98,"165,000",3715.00
+3037,欣興(3037.TW),1.96,"667,000",888.00
+CRWD,CrowdStrike Holdings(CRWD.US),1.94,"74,263",
+2383,台光電(2383.TW),1.92,"134,000",4555.00
+TSLA,Tesla(TSLA.US),1.89,"44,480",
+LITE,Lumentum(LITE.US),1.68,"23,079",
+NET,Cloudflare(NET.US),1.64,"56,060",
+HWM,Howmet Aerospace(HWM.US),1.55,"65,100",
+AVGO,Broadcom(AVGO.US),1.53,"43,040",
+3017,奇鋐(3017.TW),1.51,"158,000",2820.00
+DDOG,Datadog(DDOG.US),1.30,"55,200",
+2368,金像電(2368.TW),1.16,"368,000",964.00
+GH,Guardant Health(GH.US),1.11,"59,300",
+NOW,ServiceNow(NOW.US),1.05,"89,981",
+AAPL,Apple(AAPL.US),1.04,"29,200",
+3443,創意(3443.TW),0.97,"44,000",7115.00
+TWST,Twist Bioscience(TWST.US),0.81,"53,836",
+SEI,Solaris Energy Infrastructure(SEI.US),0.81,"109,400",
+RPRX,Royalty Pharma(RPRX.US),0.66,"92,700",
+8046,南電(8046.TW),0.49,"141,000",1080.00
+2308,台達電(2308.TW),0.44,"106,000",1220.00
