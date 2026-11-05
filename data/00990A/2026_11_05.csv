@@ -1,0 +1,39 @@
+股票代號,個股名稱,投資比例(%),持有股數,Price
+MSFT,Microsoft(MSFT.US),7.55,"126,080",
+NVDA,NVIDIA(NVDA.US),6.06,"280,800",
+BE,Bloom Energy(BE.US),5.43,"251,300",
+AMD,AMD(AMD.US),5.31,"100,699",
+PLTR,Palantir Technologies(PLTR.US),4.94,"266,842",
+META,Meta(META.US),4.39,"64,600",
+SPCX,SpaceX(SPCX.US),3.76,"256,528",
+SHOP,Shopify(SHOP.US),3.37,"204,100",
+AMZN,Amazon(AMZN.US),3.36,"117,140",
+MU,Micron(MU.US),3.26,"38,005",
+SNOW,Snowflake(SNOW.US),3.17,"101,200",
+GOOGL,Alphabet - Class A Common Stock(GOOGL.US),3.10,"99,480",
+2330,台積電(2330.TW),3.01,"406,000",2240.00
+CRWD,CrowdStrike Holdings(CRWD.US),2.92,"112,463",
+LLY,Eli Lilly(LLY.US),2.47,"16,160",
+ZS,Zscaler(ZS.US),2.38,"98,300",
+GE,GE Aerospace(GE.US),2.19,"61,800",
+6098,Recruit Holdings(6098.JP),2.08,"174,100",
+2454,聯發科(2454.TW),2.01,"165,000",3460.00
+2383,台光電(2383.TW),2.00,"134,000",4100.00
+3037,欣興(3037.TW),1.94,"667,000",800.00
+TSLA,Tesla(TSLA.US),1.85,"44,480",
+NET,Cloudflare(NET.US),1.61,"56,060",
+AVGO,Broadcom(AVGO.US),1.51,"43,040",
+HWM,Howmet Aerospace(HWM.US),1.50,"65,100",
+3017,奇鋐(3017.TW),1.46,"158,000",2565.00
+2368,金像電(2368.TW),1.16,"368,000",868.00
+DDOG,Datadog(DDOG.US),1.12,"55,200",
+AAPL,Apple(AAPL.US),1.10,"29,200",
+LITE,Lumentum(LITE.US),1.10,"16,239",
+GH,Guardant Health(GH.US),1.08,"59,300",
+ANET,Arista Networks(ANET.US),1.06,"55,000",
+3443,創意(3443.TW),1.03,"44,000",6405.00
+TWST,Twist Bioscience(TWST.US),0.83,"53,836",
+RPRX,Royalty Pharma(RPRX.US),0.68,"92,700",
+SEI,Solaris Energy Infrastructure(SEI.US),0.68,"109,400",
+8046,南電(8046.TW),0.50,"141,000",972.00
+2308,台達電(2308.TW),0.42,"106,000",1130.00
