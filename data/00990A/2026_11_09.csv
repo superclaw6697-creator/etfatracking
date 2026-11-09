@@ -1,0 +1,38 @@
+股票代號,個股名稱,投資比例(%),持有股數,Price
+MSFT,Microsoft(MSFT.US),7.75,"126,080",
+NVDA,NVIDIA(NVDA.US),6.07,"280,800",
+AMD,AMD(AMD.US),5.24,"100,699",
+BE,Bloom Energy(BE.US),5.05,"251,300",
+PLTR,Palantir Technologies(PLTR.US),4.96,"266,842",
+META,Meta(META.US),4.57,"64,600",
+AMZN,Amazon(AMZN.US),4.56,"151,860",
+GOOGL,Alphabet - Class A Common Stock(GOOGL.US),4.34,"131,480",
+SHOP,Shopify(SHOP.US),3.52,"204,100",
+2330,台積電(2330.TW),3.06,"406,000",2235.00
+SPCX,SpaceX(SPCX.US),2.93,"188,528",
+GE,GE Aerospace(GE.US),2.84,"75,800",
+CRWD,CrowdStrike Holdings(CRWD.US),2.83,"112,463",
+LLY,Eli Lilly(LLY.US),2.54,"16,160",
+ZS,Zscaler(ZS.US),2.25,"98,300",
+SNOW,Snowflake(SNOW.US),2.22,"69,400",
+AAPL,Apple(AAPL.US),2.21,"55,640",
+6098,Recruit Holdings(6098.JP),2.17,"174,100",
+MU,Micron(MU.US),2.11,"26,385",
+2454,聯發科(2454.TW),1.97,"165,000",3725.00
+2383,台光電(2383.TW),1.81,"134,000",4070.00
+NET,Cloudflare(NET.US),1.75,"56,060",
+3037,欣興(3037.TW),1.71,"667,000",757.00
+HWM,Howmet Aerospace(HWM.US),1.55,"65,100",
+AVGO,Broadcom(AVGO.US),1.46,"43,040",
+TSLA,Tesla(TSLA.US),1.35,"32,480",
+3017,奇鋐(3017.TW),1.29,"158,000",2540.00
+DDOG,Datadog(DDOG.US),1.15,"55,200",
+RPRX,Royalty Pharma(RPRX.US),1.15,"147,400",
+AEM,Agnico Eagle Mines(AEM.US),1.12,"50,400",
+ANET,Arista Networks(ANET.US),1.09,"55,000",
+2368,金像電(2368.TW),1.06,"368,000",894.00
+3443,創意(3443.TW),0.96,"44,000",6705.00
+TWST,Twist Bioscience(TWST.US),0.75,"53,836",
+THC,Tenet Healthcare(THC.US),0.52,"15,800",
+8046,南電(8046.TW),0.44,"141,000",933.00
+9602,TOHO(9602.JP),0.21,"159,500",
