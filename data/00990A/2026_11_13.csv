@@ -1,0 +1,36 @@
+股票代號,個股名稱,投資比例(%),持有股數,Price
+AMD,AMD(AMD.US),6.47,"100,699",
+MSFT,Microsoft(MSFT.US),5.78,"100,680",
+BE,Bloom Energy(BE.US),5.66,"255,293",
+PLTR,Palantir Technologies(PLTR.US),5.03,"266,842",
+AMZN,Amazon(AMZN.US),4.46,"151,860",
+META,Meta(META.US),4.42,"64,600",
+2330,台積電(2330.TW),4.04,"518,000",2350.00
+AVGO,Broadcom(AVGO.US),3.90,"97,480",
+SPCX,SpaceX(SPCX.US),3.87,"251,728",
+SHOP,Shopify(SHOP.US),3.29,"204,100",
+GOOGL,Alphabet - Class A Common Stock(GOOGL.US),3.28,"100,040",
+LLY,Eli Lilly(LLY.US),3.04,"19,380",
+3443,創意(3443.TW),2.85,"109,000",8610.00
+CRWD,CrowdStrike Holdings(CRWD.US),2.84,"112,463",
+SNOW,Snowflake(SNOW.US),2.78,"84,880",
+NET,Cloudflare(NET.US),2.77,"79,260",
+GE,GE Aerospace(GE.US),2.75,"75,800",
+2454,聯發科(2454.TW),2.48,"193,000",4120.00
+ANET,Arista Networks(ANET.US),2.35,"103,800",
+6098,Recruit Holdings(6098.JP),2.00,"174,100",
+MU,Micron(MU.US),1.97,"22,425",
+2383,台光電(2383.TW),1.83,"134,000",4215.00
+3017,奇鋐(3017.TW),1.76,"190,000",3040.00
+3037,欣興(3037.TW),1.76,"667,000",785.00
+HWM,Howmet Aerospace(HWM.US),1.59,"65,100",
+2368,金像電(2368.TW),1.44,"442,000",1030.00
+FROG,JFrog(FROG.US),1.32,"108,900",
+NVDA,NVIDIA(NVDA.US),1.23,"67,400",
+ZS,Zscaler(ZS.US),1.12,"53,000",
+2308,台達電(2308.TW),0.99,"240,000",1240.00
+SMTC,Semtech(SMTC.US),0.90,"68,308",
+APP,Applovin(APP.US),0.76,"17,560",
+8046,南電(8046.TW),0.55,"170,000",977.00
+HPE,HP Enterprise(HPE.US),0.52,"94,200",
+9602,TOHO(9602.JP),0.19,"159,500",
