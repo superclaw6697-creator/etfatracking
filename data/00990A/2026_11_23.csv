@@ -1,0 +1,35 @@
+股票代號,個股名稱,投資比例(%),持有股數,Price
+MSFT,Microsoft(MSFT.US),6.34,"100,680",
+AMZN,Amazon(AMZN.US),4.88,"151,860",
+META,Meta(META.US),4.71,"64,600",
+GOOGL,Alphabet - Class A Common Stock(GOOGL.US),4.50,"130,520",
+2330,台積電(2330.TW),4.09,"518,000",2030.00
+CRWD,CrowdStrike Holdings(CRWD.US),3.44,"115,363",
+LLY,Eli Lilly(LLY.US),3.40,"19,380",
+AAPL,Apple(AAPL.US),3.16,"70,840",
+GE,GE Aerospace(GE.US),3.05,"75,800",
+BE,Bloom Energy(BE.US),2.91,"157,053",
+NET,Cloudflare(NET.US),2.83,"79,260",
+APP,Applovin(APP.US),2.83,"62,440",
+SNOW,Snowflake(SNOW.US),2.81,"84,880",
+ANET,Arista Networks(ANET.US),2.74,"125,800",
+2454,聯發科(2454.TW),2.55,"193,000",3685.00
+PLTR,Palantir Technologies(PLTR.US),2.48,"132,642",
+AVGO,Broadcom(AVGO.US),2.41,"60,760",
+3443,創意(3443.TW),2.32,"109,000",5120.00
+SHOP,Shopify(SHOP.US),2.28,"141,600",
+FROG,JFrog(FROG.US),2.24,"170,308",
+ZS,Zscaler(ZS.US),1.94,"76,600",
+PANW,Palo Alto(PANW.US),1.89,"42,320",
+AMD,AMD(AMD.US),1.83,"33,099",
+HWM,Howmet Aerospace(HWM.US),1.77,"65,100",
+U,Unity Software(U.US),1.75,"300,000",
+3017,奇鋐(3017.TW),1.65,"190,000",2365.00
+TTWO,Take-Two(TTWO.US),1.64,"60,200",
+6098,Recruit Holdings(6098.JP),1.38,"100,200",
+3037,欣興(3037.TW),0.94,"444,000",558.00
+2368,金像電(2368.TW),0.93,"332,000",782.00
+2383,台光電(2383.TW),0.92,"83,000",3090.00
+MU,Micron(MU.US),0.84,"10,825",
+7974,Nintendo(7974.JP),0.58,"80,400",
+9602,TOHO(9602.JP),0.45,"304,900",
