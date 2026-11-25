@@ -1,0 +1,36 @@
+股票代號,個股名稱,投資比例(%),持有股數,Price
+MSFT,Microsoft(MSFT.US),7.19,"116,560",
+GOOGL,Alphabet - Class A Common Stock(GOOGL.US),5.53,"159,480",
+AMZN,Amazon(AMZN.US),4.76,"151,860",
+META,Meta(META.US),4.74,"64,600",
+2330,台積電(2330.TW),4.36,"518,000",2150.00
+AAPL,Apple(AAPL.US),4.11,"93,320",
+LLY,Eli Lilly(LLY.US),3.39,"19,380",
+BE,Bloom Energy(BE.US),3.05,"157,053",
+CRWD,CrowdStrike Holdings(CRWD.US),3.02,"115,363",
+GE,GE Aerospace(GE.US),3.00,"75,800",
+APP,Applovin(APP.US),2.96,"62,440",
+2454,聯發科(2454.TW),2.95,"193,000",3645.00
+PANW,Palo Alto(PANW.US),2.94,"67,000",
+SNOW,Snowflake(SNOW.US),2.86,"84,880",
+NET,Cloudflare(NET.US),2.83,"79,260",
+PLTR,Palantir Technologies(PLTR.US),2.66,"132,642",
+ANET,Arista Networks(ANET.US),2.64,"125,800",
+SHOP,Shopify(SHOP.US),2.33,"141,600",
+AVGO,Broadcom(AVGO.US),2.27,"60,760",
+FROG,JFrog(FROG.US),2.21,"170,308",
+U,Unity Software(U.US),2.11,"351,600",
+3017,奇鋐(3017.TW),1.87,"190,000",2545.00
+HWM,Howmet Aerospace(HWM.US),1.71,"65,100",
+AMD,AMD(AMD.US),1.70,"33,099",
+TTWO,Take-Two(TTWO.US),1.65,"60,200",
+6857,Advantest(6857.JP),1.46,"68,500",
+6098,Recruit Holdings(6098.JP),1.36,"100,200",
+MU,Micron(MU.US),1.29,"16,425",
+3443,創意(3443.TW),1.21,"57,000",5070.00
+2383,台光電(2383.TW),1.06,"83,000",3355.00
+3037,欣興(3037.TW),1.03,"444,000",585.00
+COHR,Coherent(COHR.US),0.76,"31,240",
+4004,Resonac(4004.JP),0.75,"78,600",
+SMTC,Semtech(SMTC.US),0.65,"60,900",
+7974,Nintendo(7974.JP),0.54,"80,400",
