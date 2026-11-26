@@ -1,0 +1,35 @@
+股票代號,個股名稱,投資比例(%),持有股數,Price
+MSFT,Microsoft(MSFT.US),7.22,"116,560",
+GOOGL,Alphabet - Class A Common Stock(GOOGL.US),5.50,"159,480",
+META,Meta(META.US),4.98,"64,600",
+AMZN,Amazon(AMZN.US),4.69,"151,860",
+2330,台積電(2330.TW),4.25,"518,000",2145.00
+AAPL,Apple(AAPL.US),4.19,"93,320",
+LLY,Eli Lilly(LLY.US),3.41,"19,380",
+CRWD,CrowdStrike Holdings(CRWD.US),3.05,"115,363",
+GE,GE Aerospace(GE.US),3.04,"75,800",
+PANW,Palo Alto(PANW.US),3.01,"67,000",
+APP,Applovin(APP.US),2.99,"62,440",
+SNOW,Snowflake(SNOW.US),2.87,"84,880",
+NET,Cloudflare(NET.US),2.84,"79,260",
+PLTR,Palantir Technologies(PLTR.US),2.74,"132,642",
+2454,聯發科(2454.TW),2.68,"193,000",3705.00
+SHOP,Shopify(SHOP.US),2.39,"141,600",
+AVGO,Broadcom(AVGO.US),2.31,"60,760",
+FROG,JFrog(FROG.US),2.26,"170,308",
+U,Unity Software(U.US),2.14,"351,600",
+BE,Bloom Energy(BE.US),2.04,"105,653",
+3017,奇鋐(3017.TW),1.84,"190,000",2795.00
+HWM,Howmet Aerospace(HWM.US),1.74,"65,100",
+TTWO,Take-Two(TTWO.US),1.73,"60,200",
+AMD,AMD(AMD.US),1.70,"33,099",
+ANET,Arista Networks(ANET.US),1.63,"78,500",
+6098,Recruit Holdings(6098.JP),1.35,"100,200",
+6857,Advantest(6857.JP),1.29,"68,500",
+MU,Micron(MU.US),1.25,"16,425",
+3443,創意(3443.TW),1.10,"57,000",5390.00
+2383,台光電(2383.TW),1.06,"83,000",3660.00
+COHR,Coherent(COHR.US),0.77,"31,240",
+SMTC,Semtech(SMTC.US),0.72,"60,900",
+4004,Resonac(4004.JP),0.68,"78,600",
+7974,Nintendo(7974.JP),0.57,"80,400",
